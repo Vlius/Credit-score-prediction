@@ -4,11 +4,11 @@ import numpy as np
 import xgboost as xgb
 import joblib
 
-# Load model and preprocessing objects
+# Load model and preprocessing objects using relative paths
 model = xgb.Booster()
-model.load_model("C:/Users/Vilius/Desktop/Capstone_3/model_api/xgboost_model.json")
-imputer = joblib.load("C:/Users/Vilius/Desktop/Capstone_3/model_api/imputer.joblib")
-scaler = joblib.load("C:/Users/Vilius/Desktop/Capstone_3/model_api/scaler.joblib")
+model.load_model("xgboost_model.json")  # Relative path
+imputer = joblib.load("imputer.joblib")  # Relative path
+scaler = joblib.load("scaler.joblib")  # Relative path
 
 # Define features
 feats = [
