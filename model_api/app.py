@@ -5,31 +5,34 @@ import xgboost as xgb
 import joblib
 import os
 
-# Get absolute path of the script directory
+# Define paths relative to app.py's directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Load model and preprocessing objects using absolute paths
 model_path = os.path.join(script_dir, "xgboost_model.json")
 imputer_path = os.path.join(script_dir, "imputer.joblib")
 scaler_path = os.path.join(script_dir, "scaler.joblib")
 
-# Check if files exist before loading
-if not os.path.exists(model_path):
-    raise FileNotFoundError(f"Model file not found at: {model_path}")
+# Debug paths (remove after troubleshooting)
+st.write(f"Current working directory: {os.getcwd()}")
+st.write(f"Looking for imputer at: {imputer_path}")
+st.write(f"File exists: {os.path.exists(imputer_path)}")
 
-if not os.path.exists(imputer_path):
-    raise FileNotFoundError(f"Imputer file not found at: {imputer_path}")
+# Ensure all required files exist
+missing_files = [
+    path for path in [model_path, imputer_path, scaler_path] if not os.path.exists(path)
+]
+if missing_files:
+    st.error(
+        f"Missing files: {', '.join(missing_files)}. Please check deployment paths."
+    )
+    st.stop()
 
-if not os.path.exists(scaler_path):
-    raise FileNotFoundError(f"Scaler file not found at: {scaler_path}")
-
-# Load model and transformers
+# Load model and preprocessing objects
 model = xgb.Booster()
 model.load_model(model_path)
 imputer = joblib.load(imputer_path)
 scaler = joblib.load(scaler_path)
 
-# Define features
+# Define features (unchanged)
 feats = [
     "AMT_CREDIT",
     "AMT_INCOME_TOTAL",
@@ -46,7 +49,7 @@ feats = [
 ]
 
 
-# Prediction function
+# Prediction function (unchanged)
 def predict_credit_risk(input_dict):
     input_dict["CREDIT_TO_INCOME_RATIO"] = (
         input_dict["AMT_CREDIT"] / input_dict["AMT_INCOME_TOTAL"]
@@ -65,12 +68,11 @@ def predict_credit_risk(input_dict):
     input_data = pd.DataFrame(imputer.transform(input_data), columns=feats)
     input_data = pd.DataFrame(scaler.transform(input_data), columns=feats)
     dmatrix = xgb.DMatrix(input_data)
-    return model.predict(dmatrix)[0] * 100  # Return as percentage
+    return model.predict(dmatrix)[0] * 100
 
 
-# Streamlit interface
+# Streamlit interface (unchanged)
 st.title("Credit Risk Prediction")
-
 st.sidebar.header("Input Features")
 input_dict = {
     "AMT_CREDIT": st.sidebar.number_input("Loan Amount", min_value=0.0, value=100000.0),
