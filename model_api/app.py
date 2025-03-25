@@ -11,7 +11,7 @@ model_path = os.path.join(script_dir, "xgboost_model.json")
 imputer_path = os.path.join(script_dir, "imputer.joblib")
 scaler_path = os.path.join(script_dir, "scaler.joblib")
 
-# Debug paths (remove after troubleshooting)
+# Debug paths
 st.write(f"Current working directory: {os.getcwd()}")
 st.write(f"Looking for imputer at: {imputer_path}")
 st.write(f"File exists: {os.path.exists(imputer_path)}")
@@ -26,11 +26,27 @@ if missing_files:
     )
     st.stop()
 
-# Load model and preprocessing objects
+# Load model and preprocessing objects with error handling
 model = xgb.Booster()
 model.load_model(model_path)
-imputer = joblib.load(imputer_path)
-scaler = joblib.load(scaler_path)
+
+try:
+    imputer = joblib.load(imputer_path)
+except ModuleNotFoundError as e:
+    st.error(f"Failed to load imputer: Missing module - {str(e)}")
+    st.stop()
+except Exception as e:
+    st.error(f"Failed to load imputer: {str(e)}")
+    st.stop()
+
+try:
+    scaler = joblib.load(scaler_path)
+except ModuleNotFoundError as e:
+    st.error(f"Failed to load scaler: Missing module - {str(e)}")
+    st.stop()
+except Exception as e:
+    st.error(f"Failed to load scaler: {str(e)}")
+    st.stop()
 
 # Define features (unchanged)
 feats = [
