@@ -3,12 +3,31 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import joblib
+import os
 
-# Load model and preprocessing objects using relative paths
+# Get absolute path of the script directory
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Load model and preprocessing objects using absolute paths
+model_path = os.path.join(script_dir, "xgboost_model.json")
+imputer_path = os.path.join(script_dir, "imputer.joblib")
+scaler_path = os.path.join(script_dir, "scaler.joblib")
+
+# Check if files exist before loading
+if not os.path.exists(model_path):
+    raise FileNotFoundError(f"Model file not found at: {model_path}")
+
+if not os.path.exists(imputer_path):
+    raise FileNotFoundError(f"Imputer file not found at: {imputer_path}")
+
+if not os.path.exists(scaler_path):
+    raise FileNotFoundError(f"Scaler file not found at: {scaler_path}")
+
+# Load model and transformers
 model = xgb.Booster()
-model.load_model("xgboost_model.json")  # Relative path
-imputer = joblib.load("imputer.joblib")  # Relative path
-scaler = joblib.load("scaler.joblib")  # Relative path
+model.load_model(model_path)
+imputer = joblib.load(imputer_path)
+scaler = joblib.load(scaler_path)
 
 # Define features
 feats = [
