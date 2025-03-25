@@ -11,10 +11,6 @@ model_path = os.path.join(script_dir, "xgboost_model.json")
 imputer_path = os.path.join(script_dir, "imputer.joblib")
 scaler_path = os.path.join(script_dir, "scaler.joblib")
 
-# Debug paths
-st.write(f"Current working directory: {os.getcwd()}")
-st.write(f"Looking for imputer at: {imputer_path}")
-st.write(f"File exists: {os.path.exists(imputer_path)}")
 
 # Ensure all required files exist
 missing_files = [
